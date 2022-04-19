@@ -1,2 +1,2 @@
 # scrub
-api scrapping utility
+Glassnode API scrapping utility
