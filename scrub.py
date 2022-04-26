@@ -125,7 +125,7 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n): 
         yield l[i:i + n]
 
-async def producer(queue: Queue, endpoints: array) -> None:
+async def producer(queue: Queue, endpoints: array, batch_size:int) -> None:
   messages = []
   for e in endpoints:
     path = e['path']
@@ -138,7 +138,7 @@ async def producer(queue: Queue, endpoints: array) -> None:
   # shuffling messages to distribute load over endpoints
   random.shuffle(messages)
   # push messages to queue in batches
-  for batch in divide_chunks(messages, 8):
+  for batch in divide_chunks(messages, batch_size):
     for b in batch:
       await queue.put(b)
     #await queue.join()
@@ -185,19 +185,21 @@ async def worker(n: int, queue: Queue, session: aiohttp.ClientSession) -> None:
 
 # scrape data
 @cli.command()
-async def scrape():
-  num_workers = 18
+@click.option('-n', '--num_workers', required=True, default=18, type=int, show_default=True, help='how many scrapping workers')
+@click.option('-b', '--batch_size', required=True, default=8, type=int, show_default=True, help='size of scraping batch')
+async def scrape(num_workers, batch_size):
   endpoints = json.loads(await retrieve('endpoints.json'))
   if(not len(endpoints)):
     logging.info('no endpoints')
     return
 
   queue = Queue()
-  # session_timeout = aiohttp.ClientTimeout(total=None,sock_connect=1800,sock_read=1800)
-  #async with aiohttp.ClientSession(headers={'x-api-key': config['apikey']}, timeout=session_timeout) as session:
+  # setup session with access x-api-key header
   async with aiohttp.ClientSession(headers={'x-api-key': config['apikey']}) as session:
+    # build workes pool
     workers = [create_task(worker(n, queue, session)) for n in range(num_workers)]
-    producers = [create_task(producer(queue, endpoints))]
+    # only one producer
+    producers = [create_task(producer(queue, endpoints, batch_size))]
     await gather(*producers)
     await queue.join()  # Implicitly awaits consumers, too
     for w in workers:
