@@ -1,3 +1,5 @@
 anyio>=3.5.0
 asyncclick>=8.0.3.2
 aiohttp>=3.8.1
+aiofiles>=0.8.0
+progressbar2>=4.0.0
