@@ -183,9 +183,9 @@ async def worker(n: int, queue: Queue, session: aiohttp.ClientSession) -> None:
     await sleep(0.3)
     queue.task_done()
 
-# scrap data
+# scrape data
 @cli.command()
-async def scrap():
+async def scrape():
   num_workers = 18
   endpoints = json.loads(await retrieve('endpoints.json'))
   if(not len(endpoints)):
