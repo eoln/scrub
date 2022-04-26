@@ -50,7 +50,7 @@ Commands:
   scrape
 ```
 ### scrub endpoints
-> Generates endpoints to be fetched by `scrub scrap`
+> Generates endpoints to be fetched by `scrub scrape`
 ```bash
 > scrub endpoints --help
 
