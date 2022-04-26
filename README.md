@@ -57,13 +57,23 @@ Commands:
 Usage: scrub endpoints [OPTIONS]
 
 Options:
-  -a, --assets TEXT    digital asset code: BTC, ETH, ...  [default: *;
-                       required]
+  -a, --assets TEXT    digital asset code: BTC, ETH, ...  [default: *; required]
   -t, --tiers INTEGER  tier: 1, 2, 3  [default: 0; required]
-  -p, --path TEXT      filter by path specified as regular expression
-                       [default: *; required]
+  -p, --path TEXT      filter by path specified as regular expression [default: *; required]
   --help               Show this message and exit.
 ```
 
 ### scrub scrape
 > fetch data specified in `data/endpoints.json` and store them into `csv` files into `data` folder
+
+```bash
+> scrub scrape --help
+
+Usage: scrub scrape [OPTIONS]
+
+Options:
+  -n, --num_workers INTEGER  how many scrapping workers  [default: 18; required]
+  -b, --batch_size INTEGER   size of scraping batch  [default: 8; required]
+  --help                     Show this message and exit.
+
+```
